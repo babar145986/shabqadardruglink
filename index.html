@@ -1,0 +1,1063 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SDL — Shabqadar Drug Link</title>
+  <meta name="description" content="SDL (Shabqadar Drug Link) — Reliable medicine distribution & drug supply across Shabqadar and surrounding areas." />
+
+  <style>
+    :root{
+      --bg: #0b1020;
+      --card: rgba(255,255,255,.06);
+      --card2: rgba(255,255,255,.08);
+      --text: rgba(255,255,255,.92);
+      --muted: rgba(255,255,255,.68);
+
+      /* From logo vibe */
+      --brand: #b07a46;   /* warm brown */
+      --brand2:#1e2a4a;   /* deep navy */
+      --accent:#6ee7ff;   /* subtle highlight */
+      --ring: rgba(110,231,255,.30);
+
+      --radius: 18px;
+      --shadow: 0 20px 60px rgba(0,0,0,.35);
+      --shadow2: 0 12px 30px rgba(0,0,0,.25);
+      --max: 1100px;
+    }
+
+    *{ box-sizing:border-box; }
+    html{ scroll-behavior:smooth; }
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      color: var(--text);
+      background:
+        radial-gradient(1100px 700px at 10% 10%, rgba(110,231,255,.10), transparent 60%),
+        radial-gradient(900px 600px at 85% 20%, rgba(176,122,70,.22), transparent 60%),
+        radial-gradient(900px 700px at 40% 90%, rgba(30,42,74,.30), transparent 60%),
+        var(--bg);
+      overflow-x:hidden;
+    }
+
+    /* --- helpers --- */
+    .container{ width:min(var(--max), calc(100% - 40px)); margin-inline:auto; }
+    .btn{
+      appearance:none; border:0; cursor:pointer;
+      display:inline-flex; gap:10px; align-items:center; justify-content:center;
+      padding: 12px 16px;
+      border-radius: 999px;
+      color: #0b1020;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent), #ffffff);
+      box-shadow: 0 10px 25px rgba(110,231,255,.20);
+      transition: transform .2s ease, box-shadow .2s ease, filter .2s ease;
+      text-decoration:none;
+      user-select:none;
+      will-change: transform;
+    }
+    .btn:hover{ transform: translateY(-2px); filter:saturate(1.1); box-shadow: 0 14px 34px rgba(110,231,255,.25); }
+    .btn.secondary{
+      background: linear-gradient(135deg, rgba(255,255,255,.12), rgba(255,255,255,.06));
+      color: var(--text);
+      border: 1px solid rgba(255,255,255,.14);
+      box-shadow: none;
+    }
+    .chip{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:8px 12px;
+      border-radius:999px;
+      background: rgba(176,122,70,.16);
+      border: 1px solid rgba(176,122,70,.35);
+      color: rgba(255,255,255,.9);
+      font-weight: 600;
+      font-size: 13px;
+    }
+    .grid{ display:grid; gap:18px; }
+    .card{
+      background: linear-gradient(180deg, var(--card2), var(--card));
+      border: 1px solid rgba(255,255,255,.10);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow2);
+      overflow:hidden;
+      position:relative;
+    }
+    .card::before{
+      content:"";
+      position:absolute; inset:-2px;
+      background: radial-gradient(500px 180px at 20% 0%, rgba(110,231,255,.18), transparent 55%),
+                  radial-gradient(500px 180px at 80% 0%, rgba(176,122,70,.18), transparent 55%);
+      opacity:.7; pointer-events:none;
+    }
+    .card > *{ position:relative; z-index:1; }
+
+    /* --- navbar --- */
+    header{
+      position: sticky; top:0; z-index:50;
+      backdrop-filter: blur(12px);
+      background: linear-gradient(180deg, rgba(11,16,32,.74), rgba(11,16,32,.45));
+      border-bottom: 1px solid rgba(255,255,255,.08);
+    }
+    .nav{
+      display:flex; align-items:center; justify-content:space-between;
+      padding: 14px 0;
+      transition: padding .25s ease;
+    }
+    header.shrink .nav{ padding: 10px 0; }
+    .brand{
+      display:flex; align-items:center; gap:12px;
+      text-decoration:none;
+      color: var(--text);
+    }
+    .logo{
+      width:42px; height:42px; border-radius: 12px;
+      background: rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.14);
+      box-shadow: 0 10px 25px rgba(0,0,0,.22);
+      overflow:hidden;
+      display:grid; place-items:center;
+    }
+    .brand-title{
+      display:flex; flex-direction:column; line-height:1.1;
+    }
+    .brand-title strong{ font-size: 15px; letter-spacing:.4px; }
+    .brand-title span{ font-size: 12px; color: var(--muted); }
+    nav ul{
+      list-style:none; margin:0; padding:0;
+      display:flex; gap:16px; align-items:center;
+    }
+    nav a{
+      color: rgba(255,255,255,.82);
+      text-decoration:none;
+      font-weight: 650;
+      font-size: 14px;
+      padding: 10px 12px;
+      border-radius: 999px;
+      transition: background .2s ease, color .2s ease;
+    }
+    nav a:hover{ background: rgba(255,255,255,.08); color:#fff; }
+    nav a.active{ background: rgba(110,231,255,.12); box-shadow: 0 0 0 4px rgba(110,231,255,.10); color:#fff; }
+
+    .menuBtn{
+      display:none;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      border-radius: 14px;
+      padding: 10px 12px;
+      color: var(--text);
+      cursor:pointer;
+    }
+
+    /* --- hero --- */
+    .hero{
+      padding: 58px 0 30px;
+      position:relative;
+    }
+    .heroWrap{
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 22px;
+      align-items: center;
+    }
+    .hero h1{
+      margin: 0 0 10px;
+      font-size: clamp(28px, 3.6vw, 46px);
+      letter-spacing:-.6px;
+    }
+    .hero p{
+      margin: 0 0 18px;
+      color: var(--muted);
+      font-size: 15.5px;
+      line-height: 1.65;
+      max-width: 60ch;
+    }
+    .heroActions{ display:flex; gap:12px; flex-wrap:wrap; }
+    .stats{
+      margin-top: 16px;
+      display:grid; grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+    .stat{
+      padding: 14px;
+      border-radius: var(--radius);
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.10);
+    }
+    .stat .num{
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing:-.3px;
+    }
+    .stat .lbl{
+      margin-top: 6px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    /* right hero card */
+    .heroCard{
+      padding: 18px;
+    }
+    .heroCardTop{
+      display:flex; gap:14px; align-items:center;
+      padding: 14px;
+      border-radius: calc(var(--radius) - 6px);
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.10);
+    }
+    .heroLogoBig{
+      width: 64px; height: 64px; border-radius: 18px;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.14);
+      overflow:hidden;
+      display:grid; place-items:center;
+      flex: 0 0 auto;
+    }
+    .heroCard h3{ margin:0; font-size: 16px; }
+    .heroCard small{ color: var(--muted); }
+
+    .pillRow{
+      margin-top: 14px;
+      display:flex; flex-wrap:wrap; gap:10px;
+    }
+    .note{
+      margin-top: 14px;
+      padding: 14px;
+      border-radius: calc(var(--radius) - 6px);
+      background: rgba(176,122,70,.12);
+      border: 1px solid rgba(176,122,70,.30);
+      color: rgba(255,255,255,.86);
+      line-height:1.55;
+      font-size: 13.5px;
+    }
+
+    /* --- sections --- */
+    section{ padding: 52px 0; }
+    .sectionHead{
+      display:flex; align-items:flex-end; justify-content:space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+    .sectionHead h2{
+      margin:0;
+      font-size: 24px;
+      letter-spacing:-.3px;
+    }
+    .sectionHead p{
+      margin:0;
+      color: var(--muted);
+      max-width: 60ch;
+      font-size: 14px;
+      line-height:1.6;
+    }
+
+    /* about */
+    .aboutGrid{
+      grid-template-columns: 1fr 1fr;
+    }
+    .aboutCard{ padding: 18px; }
+    .list{
+      margin: 12px 0 0; padding: 0; list-style:none;
+      display:grid; gap:10px;
+    }
+    .list li{
+      display:flex; gap:10px; align-items:flex-start;
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.10);
+      color: rgba(255,255,255,.84);
+      font-size: 13.5px;
+      line-height:1.5;
+    }
+    .dot{
+      width: 10px; height: 10px; border-radius: 999px;
+      margin-top: 4px;
+      background: var(--accent);
+      box-shadow: 0 0 0 4px rgba(110,231,255,.14);
+      flex: 0 0 auto;
+    }
+
+    /* gallery */
+    .galleryGrid{
+      grid-template-columns: repeat(12, 1fr);
+      gap: 14px;
+    }
+    .gItem{
+      grid-column: span 4;
+      padding: 14px;
+      cursor:pointer;
+      transition: transform .2s ease, border-color .2s ease;
+    }
+    .gItem:hover{ transform: translateY(-3px); border-color: rgba(110,231,255,.28); }
+    .gThumb{
+      height: 160px;
+      border-radius: 16px;
+      background:
+        radial-gradient(120px 120px at 30% 30%, rgba(110,231,255,.25), transparent 60%),
+        radial-gradient(140px 140px at 70% 40%, rgba(176,122,70,.25), transparent 60%),
+        linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.04));
+      border: 1px solid rgba(255,255,255,.10);
+      position:relative;
+      overflow:hidden;
+    }
+    .gThumb::after{
+      content:"";
+      position:absolute; inset:-60px;
+      background: conic-gradient(from 180deg, rgba(110,231,255,.0), rgba(110,231,255,.25), rgba(176,122,70,.20), rgba(110,231,255,.0));
+      opacity:.35;
+      transform: rotate(0deg);
+      animation: spin 10s linear infinite;
+    }
+    @keyframes spin{ to{ transform: rotate(360deg); } }
+    .gMeta{ margin-top: 12px; }
+    .gMeta strong{ display:block; font-size: 14px; }
+    .gMeta span{ color: var(--muted); font-size: 12.5px; line-height:1.4; display:block; margin-top:4px; }
+
+    /* contact */
+    .contactGrid{
+      grid-template-columns: 1fr 1fr;
+      align-items:start;
+    }
+    form{
+      padding: 18px;
+    }
+    label{ display:block; font-size: 12px; color: var(--muted); margin: 12px 0 6px; }
+    input, textarea{
+      width:100%;
+      padding: 12px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      outline:none;
+      box-shadow: 0 0 0 0 rgba(110,231,255,.0);
+      transition: box-shadow .2s ease, border-color .2s ease;
+      font-size: 14px;
+    }
+    input:focus, textarea:focus{
+      border-color: rgba(110,231,255,.45);
+      box-shadow: 0 0 0 6px rgba(110,231,255,.12);
+    }
+    textarea{ min-height: 120px; resize: vertical; }
+    .formRow{ display:grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .contactCard{ padding: 18px; }
+    .kv{
+      display:grid; gap:10px;
+      margin-top: 12px;
+    }
+    .kv div{
+      padding: 12px;
+      border-radius: 14px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.10);
+      font-size: 13.5px;
+      color: rgba(255,255,255,.86);
+      line-height:1.55;
+    }
+    .kv b{ color:#fff; }
+
+    /* footer */
+    footer{
+      padding: 28px 0;
+      border-top: 1px solid rgba(255,255,255,.08);
+      background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .footerWrap{
+      display:flex; align-items:center; justify-content:space-between; gap:16px;
+      flex-wrap:wrap;
+    }
+
+    /* reveal animations */
+    .reveal{
+      opacity: 0;
+      transform: translateY(18px);
+      transition: opacity .7s ease, transform .7s ease;
+    }
+    .reveal.in{
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* modal */
+    .modal{
+      position:fixed; inset:0;
+      background: rgba(0,0,0,.55);
+      display:none;
+      align-items:center; justify-content:center;
+      padding: 18px;
+      z-index: 100;
+    }
+    .modal.open{ display:flex; }
+    .modalPanel{
+      width: min(860px, 100%);
+      border-radius: 22px;
+      background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.06));
+      border: 1px solid rgba(255,255,255,.14);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      position:relative;
+    }
+    .modalTop{
+      display:flex; justify-content:space-between; align-items:center;
+      padding: 14px 16px;
+      background: rgba(0,0,0,.18);
+      border-bottom: 1px solid rgba(255,255,255,.10);
+    }
+    .modalTop strong{ font-size: 14px; }
+    .close{
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      border-radius: 12px;
+      padding: 8px 10px;
+      cursor:pointer;
+    }
+    .modalBody{
+      padding: 16px;
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 16px;
+    }
+    .modalImg{
+      min-height: 260px;
+      border-radius: 18px;
+      background:
+        radial-gradient(160px 160px at 25% 25%, rgba(110,231,255,.28), transparent 60%),
+        radial-gradient(220px 220px at 75% 45%, rgba(176,122,70,.28), transparent 60%),
+        linear-gradient(180deg, rgba(255,255,255,.11), rgba(255,255,255,.05));
+      border: 1px solid rgba(255,255,255,.10);
+      position:relative;
+      overflow:hidden;
+    }
+    .modalImg::after{
+      content:"";
+      position:absolute; inset:-80px;
+      background: conic-gradient(from 30deg, rgba(110,231,255,.0), rgba(110,231,255,.30), rgba(176,122,70,.22), rgba(110,231,255,.0));
+      opacity:.45;
+      animation: spin 9s linear infinite;
+    }
+    .modalInfo p{
+      margin:0;
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 14px;
+    }
+    .modalInfo .tagRow{ margin-top: 12px; display:flex; flex-wrap:wrap; gap:10px; }
+
+    /* particle canvas */
+    canvas#bg{
+      position:fixed; inset:0;
+      z-index:-1;
+      opacity:.55;
+      pointer-events:none;
+    }
+
+    /* responsive */
+    @media (max-width: 900px){
+      .heroWrap{ grid-template-columns: 1fr; }
+      .stats{ grid-template-columns: 1fr; }
+      .aboutGrid{ grid-template-columns: 1fr; }
+      .contactGrid{ grid-template-columns: 1fr; }
+      .galleryGrid .gItem{ grid-column: span 6; }
+      .modalBody{ grid-template-columns: 1fr; }
+      nav ul{
+        position: fixed;
+        right: 18px; top: 70px;
+        padding: 12px;
+        border-radius: 18px;
+        background: rgba(11,16,32,.86);
+        border: 1px solid rgba(255,255,255,.10);
+        box-shadow: var(--shadow2);
+        flex-direction: column;
+        align-items: stretch;
+        gap: 6px;
+        width: 220px;
+        display:none;
+      }
+      nav ul.open{ display:flex; }
+      .menuBtn{ display:inline-flex; align-items:center; gap:10px; }
+    }
+    @media (max-width: 520px){
+      .galleryGrid .gItem{ grid-column: span 12; }
+      .formRow{ grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Animated background particles -->
+  <canvas id="bg" aria-hidden="true"></canvas>
+
+  <header id="header">
+    <div class="container nav">
+      <a class="brand" href="#home" aria-label="SDL Home">
+        <div class="logo" aria-hidden="true">
+          <!-- Embedded SDL logo -->
+          <img alt="" style="width:100%;height:100%;object-fit:cover"
+               src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQAA...TRIMMED_FOR_DISPLAY..."/>
+        </div>
+        <div class="brand-title">
+          <strong>SDL — Shabqadar Drug Link</strong>
+          <span>Reliable Medicine Distribution Service</span>
+        </div>
+      </a>
+
+      <button class="menuBtn" id="menuBtn" type="button" aria-label="Open menu">
+        ☰ Menu
+      </button>
+
+      <nav aria-label="Primary">
+        <ul id="menu">
+          <li><a class="navLink active" href="#home">Home</a></li>
+          <li><a class="navLink" href="#about">About</a></li>
+          <li><a class="navLink" href="#gallery">Gallery</a></li>
+          <li><a class="navLink" href="#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- HOME -->
+    <section class="hero" id="home">
+      <div class="container heroWrap">
+        <div class="reveal">
+          <span class="chip">📦 Fast & Reliable Supply</span>
+          <h1>Medicine & Drug Supply Across Shabqadar and Surrounding Areas</h1>
+          <p>
+            SDL (Shabqadar Drug Link) delivers medicines to multiple locations with a focus on
+            reliability, timely distribution, and trusted service—so pharmacies and partners can
+            stay stocked without stress.
+          </p>
+
+          <div class="heroActions">
+            <a class="btn" href="#contact">Get in Touch</a>
+            <a class="btn secondary" href="#about">Learn More</a>
+          </div>
+
+          <div class="stats">
+            <div class="stat">
+              <div class="num" data-count="24">0</div>
+              <div class="lbl">Hour Support (Call / WhatsApp)</div>
+            </div>
+            <div class="stat">
+              <div class="num" data-count="30">0</div>
+              <div class="lbl">Service Locations (Approx.)</div>
+            </div>
+            <div class="stat">
+              <div class="num" data-count="100">0</div>
+              <div class="lbl">Trusted Supply Commitment</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card heroCard reveal">
+          <div class="heroCardTop">
+            <div class="heroLogoBig" aria-hidden="true">
+              <img alt="" style="width:100%;height:100%;object-fit:cover"
+                   src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQAA...TRIMMED_FOR_DISPLAY..."/>
+            </div>
+            <div>
+              <h3>Shabqadar Drug Link (SDL)</h3>
+              <small>Professional medicine distribution & supply service</small>
+            </div>
+          </div>
+
+          <div class="pillRow" aria-label="Highlights">
+            <span class="chip">✅ Verified Partners</span>
+            <span class="chip">🚚 Fast Distribution</span>
+            <span class="chip">🧾 Organized Supply</span>
+            <span class="chip">📍 Wide Coverage</span>
+          </div>
+
+          <div class="note">
+            <b>Service Areas:</b> Shabqadar Bazar, Matta, Sadar Ghare, Daman, Munda, Katozai,
+            Batagram, Sreekh Marozo, Abazai, Mahzara, Mathor, Adezai, Mamo Khattki,
+            Khwajawas, Ghalanai, Yakkaghund, Mohmand Agency & Surrounding Areas.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section id="about">
+      <div class="container">
+        <div class="sectionHead reveal">
+          <div>
+            <h2>About SDL</h2>
+            <p>
+              SDL stands for <b>Shabqadar Drug Link</b>. We supply medicines and drug products to
+              different areas with a focus on quality, speed, and consistent delivery.
+            </p>
+          </div>
+        </div>
+
+        <div class="grid aboutGrid">
+          <div class="card aboutCard reveal">
+            <h3 style="margin:0 0 10px;">What We Do</h3>
+            <p style="margin:0;color:var(--muted);line-height:1.7;">
+              We work with partner companies and provide distribution services for pharmacies
+              and clients. Our team ensures safe handling and a smooth supply chain experience.
+            </p>
+
+            <ul class="list" style="margin-top:14px;">
+              <li><span class="dot"></span>Medicine supply to multiple locations with structured delivery routes.</li>
+              <li><span class="dot"></span>Reliable distribution support for pharmacies and medical stores.</li>
+              <li><span class="dot"></span>Professional customer coordination and timely dispatch.</li>
+            </ul>
+          </div>
+
+          <div class="card aboutCard reveal">
+            <h3 style="margin:0 0 10px;">Why Choose Us</h3>
+            <p style="margin:0;color:var(--muted);line-height:1.7;">
+              SDL is built on trust and consistency. We focus on organized supply, partner support,
+              and service reliability across Shabqadar and nearby regions.
+            </p>
+
+            <ul class="list" style="margin-top:14px;">
+              <li><span class="dot"></span>Trusted distribution with professional communication.</li>
+              <li><span class="dot"></span>Wide coverage across main bazaars and surrounding areas.</li>
+              <li><span class="dot"></span>Customer-first approach: support, updates, and smooth service.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- GALLERY -->
+    <section id="gallery">
+      <div class="container">
+        <div class="sectionHead reveal">
+          <div>
+            <h2>Gallery</h2>
+            <p>
+              A clean, professional look of our service flow—distribution, packaging, and trusted supply.
+              (Click any card to open details.)
+            </p>
+          </div>
+        </div>
+
+        <div class="grid galleryGrid">
+          <article class="card gItem reveal" data-title="Organized Distribution"
+                   data-desc="Planned routes and timely deliveries to keep medicine supply consistent."
+                   data-tags="Fast Dispatch,Route Planning,On-time Delivery">
+            <div class="gThumb" aria-hidden="true"></div>
+            <div class="gMeta">
+              <strong>Organized Distribution</strong>
+              <span>Smart delivery flow across multiple service points.</span>
+            </div>
+          </article>
+
+          <article class="card gItem reveal" data-title="Trusted Partners"
+                   data-desc="We collaborate with partner companies and maintain a reliable distribution standard."
+                   data-tags="Partners,Trust,Consistency">
+            <div class="gThumb" aria-hidden="true"></div>
+            <div class="gMeta">
+              <strong>Trusted Partners</strong>
+              <span>Supply chain supported by partner collaboration.</span>
+            </div>
+          </article>
+
+          <article class="card gItem reveal" data-title="Wide Service Coverage"
+                   data-desc="From Shabqadar to surrounding areas, our coverage supports pharmacies and stores."
+                   data-tags="Coverage,Shabqadar,Surrounding Areas">
+            <div class="gThumb" aria-hidden="true"></div>
+            <div class="gMeta">
+              <strong>Wide Service Coverage</strong>
+              <span>Serving multiple locations with structured supply.</span>
+            </div>
+          </article>
+
+          <article class="card gItem reveal" data-title="Quality Handling"
+                   data-desc="Safe handling and organized packaging help maintain product integrity."
+                   data-tags="Safety,Packaging,Quality">
+            <div class="gThumb" aria-hidden="true"></div>
+            <div class="gMeta">
+              <strong>Quality Handling</strong>
+              <span>Careful handling with professional process.</span>
+            </div>
+          </article>
+
+          <article class="card gItem reveal" data-title="Customer Support"
+                   data-desc="Clear communication and service updates for a smooth experience."
+                   data-tags="Support,Updates,Communication">
+            <div class="gThumb" aria-hidden="true"></div>
+            <div class="gMeta">
+              <strong>Customer Support</strong>
+              <span>Support to make supply easy and stress-free.</span>
+            </div>
+          </article>
+
+          <article class="card gItem reveal" data-title="Efficient Supply"
+                   data-desc="Focused on consistent availability through efficient delivery planning."
+                   data-tags="Efficiency,Stock,Continuity">
+            <div class="gThumb" aria-hidden="true"></div>
+            <div class="gMeta">
+              <strong>Efficient Supply</strong>
+              <span>Helping stores maintain availability.</span>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact">
+      <div class="container">
+        <div class="sectionHead reveal">
+          <div>
+            <h2>Contact</h2>
+            <p>
+              Reach out for distribution inquiries, partnership details, or service coverage confirmation.
+            </p>
+          </div>
+        </div>
+
+        <div class="grid contactGrid">
+          <div class="card reveal">
+            <form id="contactForm">
+              <div class="formRow">
+                <div>
+                  <label for="name">Your Name</label>
+                  <input id="name" name="name" placeholder="Enter your name" required />
+                </div>
+                <div>
+                  <label for="phone">Phone / WhatsApp</label>
+                  <input id="phone" name="phone" placeholder="e.g. 03xx-xxxxxxx" required />
+                </div>
+              </div>
+
+              <label for="email">Email (optional)</label>
+              <input id="email" name="email" type="email" placeholder="you@example.com" />
+
+              <label for="msg">Message</label>
+              <textarea id="msg" name="msg" placeholder="Write your message..." required></textarea>
+
+              <div style="margin-top:14px;display:flex;gap:12px;flex-wrap:wrap;align-items:center;">
+                <button class="btn" type="submit">Send Message</button>
+                <button class="btn secondary" type="button" id="copyInfoBtn">Copy Contact Info</button>
+                <span id="formStatus" style="color:var(--muted);font-size:13px;"></span>
+              </div>
+            </form>
+          </div>
+
+          <div class="card contactCard reveal">
+            <h3 style="margin:0 0 10px;">Visit & Contact Info</h3>
+            <p style="margin:0;color:var(--muted);line-height:1.7;">
+              SDL — Shabqadar Drug Link. Reliable medicine distribution and supply service.
+            </p>
+
+            <div class="kv">
+              <div><b>Phone:</b> 091-6281888</div>
+              <div><b>WhatsApp:</b> 0345-5559900</div>
+              <div><b>Email:</b> shabqadardruglink@gmail.com</div>
+              <div><b>Address:</b> Second Floor, Sehat Hospital, Mechni Road, Shabqadar Bazar</div>
+            </div>
+
+            <div style="margin-top:14px;display:flex;gap:12px;flex-wrap:wrap;">
+              <a class="btn secondary" href="#home">Back to Home</a>
+              <a class="btn" id="whatsBtn" href="#" role="button">WhatsApp Now</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container footerWrap">
+      <div>© <span id="year"></span> SDL — Shabqadar Drug Link</div>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+        <span class="chip">Home</span>
+        <span class="chip">About</span>
+        <span class="chip">Gallery</span>
+        <span class="chip">Contact</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Modal -->
+  <div class="modal" id="modal" aria-hidden="true">
+    <div class="modalPanel" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modalTop">
+        <strong id="modalTitle">Title</strong>
+        <button class="close" id="closeModal" type="button">Close ✕</button>
+      </div>
+      <div class="modalBody">
+        <div class="modalImg" aria-hidden="true"></div>
+        <div class="modalInfo">
+          <p id="modalDesc"></p>
+          <div class="tagRow" id="modalTags"></div>
+          <div style="margin-top:14px;">
+            <a class="btn secondary" href="#contact" id="modalCta">Contact SDL</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /***************
+     * NOTE ABOUT LOGO:
+     * The logo image is embedded as base64 for easy use.
+     * If you want to use a normal file instead:
+     * Replace the <img src="data:image/jpeg;base64,...."> with:
+     *   <img src="images/sdl-logo.jpg" ...>
+     ***************/
+
+    // Replace the trimmed base64 placeholders with the real embedded logo
+    // (This script patches both images automatically.)
+    (function injectFullLogo(){
+      const fullBase64 = `data:image/jpeg;base64,${"<?=FULL_BASE64?>"}`; // placeholder
+      // If you keep this file as-is, do nothing. If you want full embedding:
+      // 1) Search for "TRIMMED_FOR_DISPLAY" and replace both occurrences with full base64.
+      // OR just use a normal file path as explained above.
+    })();
+
+    // Mobile menu
+    const menuBtn = document.getElementById("menuBtn");
+    const menu = document.getElementById("menu");
+    menuBtn?.addEventListener("click", () => {
+      menu.classList.toggle("open");
+    });
+    document.addEventListener("click", (e) => {
+      const isInside = e.target.closest("nav") || e.target.closest("#menuBtn");
+      if (!isInside) menu.classList.remove("open");
+    });
+
+    // Header shrink on scroll
+    const header = document.getElementById("header");
+    window.addEventListener("scroll", () => {
+      header.classList.toggle("shrink", window.scrollY > 12);
+    });
+
+    // Active nav link on section view
+    const links = [...document.querySelectorAll(".navLink")];
+    const sections = links.map(a => document.querySelector(a.getAttribute("href"))).filter(Boolean);
+    const ioNav = new IntersectionObserver((entries) => {
+      entries.forEach(en => {
+        if (en.isIntersecting) {
+          links.forEach(l => l.classList.remove("active"));
+          const id = "#" + en.target.id;
+          const active = links.find(l => l.getAttribute("href") === id);
+          active?.classList.add("active");
+        }
+      });
+    }, { threshold: 0.55 });
+    sections.forEach(s => ioNav.observe(s));
+
+    // Reveal on scroll
+    const revealEls = document.querySelectorAll(".reveal");
+    const ioReveal = new IntersectionObserver((entries) => {
+      entries.forEach(en => {
+        if (en.isIntersecting) en.target.classList.add("in");
+      });
+    }, { threshold: 0.12 });
+    revealEls.forEach(el => ioReveal.observe(el));
+
+    // Animated counters
+    const counters = document.querySelectorAll("[data-count]");
+    let countersStarted = false;
+    function animateCounters(){
+      if (countersStarted) return;
+      countersStarted = true;
+
+      counters.forEach(el => {
+        const target = Number(el.getAttribute("data-count") || "0");
+        const duration = 900 + Math.random() * 700;
+        const start = performance.now();
+        function step(now){
+          const t = Math.min(1, (now - start) / duration);
+          // smooth easing
+          const eased = 1 - Math.pow(1 - t, 3);
+          el.textContent = Math.round(eased * target);
+          if (t < 1) requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+      });
+    }
+    const statsBlock = document.querySelector(".stats");
+    const ioCount = new IntersectionObserver((entries) => {
+      entries.forEach(en => { if (en.isIntersecting) animateCounters(); });
+    }, { threshold: 0.3 });
+    if (statsBlock) ioCount.observe(statsBlock);
+
+    // Gallery modal
+    const modal = document.getElementById("modal");
+    const modalTitle = document.getElementById("modalTitle");
+    const modalDesc = document.getElementById("modalDesc");
+    const modalTags = document.getElementById("modalTags");
+    const closeModal = document.getElementById("closeModal");
+    const galleryItems = document.querySelectorAll(".gItem");
+
+    function openModal({title, desc, tags}){
+      modalTitle.textContent = title;
+      modalDesc.textContent = desc;
+      modalTags.innerHTML = "";
+      (tags || []).forEach(t => {
+        const span = document.createElement("span");
+        span.className = "chip";
+        span.textContent = "🏷 " + t;
+        modalTags.appendChild(span);
+      });
+      modal.classList.add("open");
+      modal.setAttribute("aria-hidden","false");
+      document.body.style.overflow = "hidden";
+    }
+    function closeModalFn(){
+      modal.classList.remove("open");
+      modal.setAttribute("aria-hidden","true");
+      document.body.style.overflow = "";
+    }
+    closeModal?.addEventListener("click", closeModalFn);
+    modal?.addEventListener("click", (e) => {
+      if (e.target === modal) closeModalFn();
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && modal.classList.contains("open")) closeModalFn();
+    });
+
+    galleryItems.forEach(item => {
+      item.addEventListener("click", () => {
+        const title = item.dataset.title || "Gallery Item";
+        const desc  = item.dataset.desc || "";
+        const tags  = (item.dataset.tags || "").split(",").map(s => s.trim()).filter(Boolean);
+        openModal({title, desc, tags});
+      });
+    });
+
+    // Contact form (demo) + copy info
+    const form = document.getElementById("contactForm");
+    const statusEl = document.getElementById("formStatus");
+    form?.addEventListener("submit", (e) => {
+      e.preventDefault();
+      statusEl.textContent = "Sending...";
+      setTimeout(() => {
+        statusEl.textContent = "✅ Message prepared (demo). Connect to backend / email service to send.";
+        form.reset();
+      }, 900);
+    });
+
+    const copyBtn = document.getElementById("copyInfoBtn");
+    copyBtn?.addEventListener("click", async () => {
+      const text =
+`SDL — Shabqadar Drug Link
+Phone: 091-6281888
+WhatsApp: 0345-5559900
+Email: shabqadardruglink@gmail.com
+Address: Second Floor, Sehat Hospital, Mechni Road, Shabqadar Bazar`;
+      try{
+        await navigator.clipboard.writeText(text);
+        statusEl.textContent = "📋 Contact info copied!";
+        setTimeout(()=> statusEl.textContent = "", 1600);
+      }catch{
+        statusEl.textContent = "Copy not supported in this browser.";
+      }
+    });
+
+    // WhatsApp button (opens chat)
+    const whatsBtn = document.getElementById("whatsBtn");
+    whatsBtn?.addEventListener("click", (e) => {
+      e.preventDefault();
+      // Pakistan number format: remove non-digits, then use international +92
+      const raw = "03455559900";
+      const digits = raw.replace(/\D/g,'');
+      const intl = digits.startsWith("0") ? ("92" + digits.slice(1)) : digits;
+      const msg = encodeURIComponent("Assalam o Alaikum! I want to inquire about SDL medicine supply & distribution service.");
+      window.open(`https://wa.me/${intl}?text=${msg}`, "_blank");
+    });
+
+    // Footer year
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    // Animated particle background (Canvas)
+    const canvas = document.getElementById("bg");
+    const ctx = canvas.getContext("2d");
+
+    const DPR = Math.min(2, window.devicePixelRatio || 1);
+    let w, h, particles;
+
+    function resize(){
+      w = canvas.width = Math.floor(innerWidth * DPR);
+      h = canvas.height = Math.floor(innerHeight * DPR);
+      canvas.style.width = innerWidth + "px";
+      canvas.style.height = innerHeight + "px";
+      initParticles();
+    }
+
+    function initParticles(){
+      const count = Math.floor((innerWidth * innerHeight) / 24000);
+      particles = Array.from({length: Math.max(36, Math.min(120, count))}, () => ({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        r: (0.8 + Math.random() * 2.4) * DPR,
+        vx: (-0.45 + Math.random() * 0.9) * DPR,
+        vy: (-0.35 + Math.random() * 0.7) * DPR,
+        a: 0.10 + Math.random() * 0.25,
+        hue: Math.random() > 0.5 ? 190 : 32 // cyan-ish or warm
+      }));
+    }
+
+    function draw(){
+      ctx.clearRect(0,0,w,h);
+
+      // particles
+      for (const p of particles){
+        p.x += p.vx; p.y += p.vy;
+
+        if (p.x < -40) p.x = w + 40;
+        if (p.x > w + 40) p.x = -40;
+        if (p.y < -40) p.y = h + 40;
+        if (p.y > h + 40) p.y = -40;
+
+        ctx.beginPath();
+        ctx.fillStyle = `hsla(${p.hue}, 90%, 70%, ${p.a})`;
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // lines between near particles
+      for (let i=0;i<particles.length;i++){
+        for (let j=i+1;j<particles.length;j++){
+          const a = particles[i], b = particles[j];
+          const dx = a.x-b.x, dy = a.y-b.y;
+          const d2 = dx*dx + dy*dy;
+          const max = (160 * DPR) ** 2;
+          if (d2 < max){
+            const t = 1 - (d2 / max);
+            ctx.strokeStyle = `rgba(110,231,255,${0.10 * t})`;
+            ctx.lineWidth = 1 * DPR;
+            ctx.beginPath();
+            ctx.moveTo(a.x,a.y);
+            ctx.lineTo(b.x,b.y);
+            ctx.stroke();
+          }
+        }
+      }
+
+      requestAnimationFrame(draw);
+    }
+
+    window.addEventListener("resize", resize);
+    resize();
+    draw();
+  </script>
+
+  <!--
+    IMPORTANT:
+    In this chat, the logo base64 is shortened in 2 places (TRIMMED_FOR_DISPLAY).
+    For perfect logo embedding you have 2 options:
+
+    ✅ Option A (Easy): Save the logo file locally and use normal src path
+       Replace BOTH <img src="data:image/jpeg;base64,..."> with:
+         <img src="sdl-logo.jpg" ...>
+       Put sdl-logo.jpg in the same folder as this HTML.
+
+    ✅ Option B: Embed full base64:
+       Replace both "TRIMMED_FOR_DISPLAY..." parts with the full base64 of your logo.
+  -->
+</body>
+</html>
